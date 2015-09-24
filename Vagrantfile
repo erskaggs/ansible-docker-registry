@@ -3,8 +3,9 @@ VAGRANTFILE_API_VERSION = "2"
 #service_name = 'doc-reg'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION)  do |config|
-  config.vm.box = "ubuntu/vivid"
+  config.vm.box = "ubuntu/vivid64"
   config.vm.hostname = "doc-reg"
+  config.vm.network "private_network", ip: "192.168.57.19"
 
   config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 443, host: 8443
@@ -15,8 +16,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION)  do |config|
   end
 
   config.vm.provision :ansible do |ansible|
-    ansible.inventory_path = "vagrant-inv.ini"
-    ansible.playbook = "vagrant-play.yml"
+    ansible.playbook = "play.yml"
     ansible.extra_vars = { user: "vagrant" }
     ansible.sudo = true
   end
