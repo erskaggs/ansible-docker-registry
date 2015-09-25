@@ -1,0 +1,23 @@
+---
+- name: install docker reg
+  pip: name=docker-registry
+
+- name: create directories
+  file: dest={{ item }} state=directory
+  with_items:
+    - "{{ storage-path }}"
+    - "{{ log-loc }}"
+    - "{{ doc-config }}"
+
+- name: config file
+  template: src=docker-config.yml.j2 dest="{{ doc-config }}"/config.yml
+  notify: restart docker-registry
+
+- name: symlink config
+  file: src="{{ doc-config }}"/config.yml dest=/usr/local/lib/python2.7/dist-packages/config/config.yml state=link
+
+- name: docker-reg init file
+  template: src=docker-init.j2 dest=/etc/init/docker-registry.conf
+
+- name: enable and start docker
+  service: name=docker-registry state=running enabled=yes
